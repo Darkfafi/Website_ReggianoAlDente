@@ -159,7 +159,7 @@ a:focus {
   background-color: #7b1b02;
 }
 
-.hero_section {
+#hero_section {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
@@ -172,13 +172,13 @@ a:focus {
   position: relative;
 }
 
-.hero_section .row {
+#hero_section .row {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
 }
 
-.hero_section #main_inner {
+.main {
   width: 100%;
   position: unset;
 }
