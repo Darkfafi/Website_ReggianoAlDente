@@ -159,7 +159,7 @@ a:focus {
   background-color: #7b1b02;
 }
 
-.slider_section {
+.hero_section {
   -webkit-box-flex: 1;
       -ms-flex: 1;
           flex: 1;
@@ -172,19 +172,19 @@ a:focus {
   position: relative;
 }
 
-.slider_section .row {
+.hero_section .row {
   -webkit-box-align: center;
       -ms-flex-align: center;
           align-items: center;
 }
 
-.slider_section #main_slide {
+.hero_section #main_inner {
   width: 100%;
   position: unset;
 }
 
 .hero-img img {
-  animation: imgRotate 50s linear infinite;
+  animation: imgRotate 80s linear infinite;
 }
 
 @keyframes imgRotate { 
