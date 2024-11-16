@@ -29,7 +29,7 @@ a:focus {
 
 /*** Header Header ***/
 .header_section {
-  padding: 15px 0;
+  padding-top: 5px;
 }
 
 .header_section .container-fluid {
@@ -48,7 +48,8 @@ a:focus {
 }
 
 .custom_nav-container {
-  padding: 0;
+  padding: 0px 10px 5px 10px;
+  border-bottom: 2px solid #d9a802;
 }
 
 .custom_nav-container .navbar-nav {
