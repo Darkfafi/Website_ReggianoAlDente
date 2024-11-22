@@ -28,27 +28,22 @@ function injectStyles() {
                 return response.text();
             })
             .then(data => {
-                // Parse and inject each style/link tag individually
                 const parser = new DOMParser();
                 const doc = parser.parseFromString(data, 'text/html');
                 const links = doc.querySelectorAll('link[rel="stylesheet"]');
-                const linkPromises = Array.from(links).map(link => {
-                    return new Promise(resolve => {
-                        const newLink = document.createElement('link');
-                        newLink.rel = 'stylesheet';
-                        newLink.href = link.href;
-                        newLink.onload = resolve; // Wait for the CSS to load
-                        document.head.appendChild(newLink);
-                    });
+                links.forEach(link => {
+                    const newLink = document.createElement('link');
+                    newLink.rel = 'stylesheet';
+                    newLink.href = link.href;
+                    document.head.appendChild(newLink);
                 });
-                return Promise.all(linkPromises); // Wait for all CSS files to load
             })
             .catch(error => {
                 console.error('Error:', error);
             });
     });
 
-    return Promise.all(promises); // Wait for all head elements to be processed
+    return Promise.all(promises); // Wait for all styles to load
 }
 
 function injectComponents() {
@@ -70,6 +65,19 @@ function injectComponents() {
                 return response.text();
             })
             .then(data => {
+                // Handle key-* attribute replacements
+                const keys = Array.from(element.attributes)
+                    .filter(attr => attr.name.startsWith('key-'))
+                    .map(attr => ({
+                        key: attr.name.replace('key-', '').toUpperCase(),
+                        value: attr.value
+                    }));
+                    
+                keys.forEach(({ key, value }) => {
+                    const placeholder = `[${key}]`;
+                    data = data.replace(placeholder, value);
+                });
+
                 element.innerHTML += data;
                 element.removeAttribute(attr); // Prevent reprocessing
             })
@@ -79,7 +87,6 @@ function injectComponents() {
     });
 
     return Promise.all(promises).then(() => {
-        // Recursively process nested components
-        return injectComponents();
+        return injectComponents(); // Recursively process nested components
     });
 }
