@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-<head injectComponent="dependencies">
+<html lang="en">
+<head inject-component="dependencies">
   <style>
     body {
         visibility: hidden; /* Hide the body immediately */
@@ -9,12 +9,12 @@
 </head>
 <body>
   <div class="hero_area">
-    <div injectComponent="header" key-home="active"></div>
-    <div injectComponent="main-hero"></div>
+    <div inject-component="header" key-home="active"></div>
+    <div inject-component="home/landingpage"></div>
   </div>
   
-  <div injectComponent="our-product"></div>
-  <div injectComponent="footer"></div>
+  <div inject-component="home/product"></div>
+  <div inject-component="footer"></div>
 
   <!-- Components -->
   <script src="js/components.js"></script>

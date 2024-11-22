@@ -1,6 +1,6 @@
 <!DOCTYPE html>
-<html>
-<head injectComponent="dependencies">
+<html lang="en">
+<head inject-component="dependencies, deals/dependencies, plugins/swiper">
   <style>
     body {
         visibility: hidden; /* Hide the body immediately */
@@ -9,11 +9,12 @@
   <title>Deals | Reggiano al Dente</title>
 </head>
 <body>
-  <div class="hero_area">
-    <div injectComponent="header" key-deals="active"></div>
-  </div>
+    <div class="hero_area">
+      <div inject-component="header" key-deals="active"></div>
+      <div inject-component="deals/landingpage"></div>
+    </div>
   
-  <div injectComponent="footer"></div>
+  <div inject-component="footer"></div>
 
   <!-- Components -->
   <script src="js/components.js"></script>
