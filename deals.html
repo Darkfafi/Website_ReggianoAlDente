@@ -10,10 +10,15 @@
 </head>
 <body>
     <div class="hero_area">
-      <div inject-component="header" key-deals="active"></div>
-      <div inject-component="deals/landingpage"></div>
+      <div inject-component="header" inject-replace key-deals="active"></div>
+      <div inject-component="deals/landingpage" inject-replace></div>
     </div>
-  <div inject-component="footer"></div>
+    <div>
+      <div inject-component="deals/sections/attention-section" inject-replace></div>
+      <div inject-component="deals/sections/products-section" inject-replace></div>
+      <div inject-component="deals/sections/location-section" inject-replace></div>
+      <div inject-component="footer" inject-replace></div>
+    </div>
 
   <!-- Components -->
   <script src="js/components.js"></script>
