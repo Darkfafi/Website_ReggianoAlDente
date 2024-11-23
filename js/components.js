@@ -14,20 +14,20 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function injectComponents() {
+
     const attr = "inject-component";
-    let stack = Array.from(document.querySelectorAll(`[${attr}]`)); // Initial stack of elements
+    let stack = Array.from(document.querySelectorAll(`[${attr}]`)).map(element => {
+        const attrValue = element.getAttribute(attr);
+        element.removeAttribute(attr); // Remove the attribute immediately to prevent duplication
+        return { element, componentNames: attrValue ? attrValue.split(',').map(name => name.trim()) : [] };
+    });
+
+    stack.reverse();
 
     while (stack.length > 0) {
-        const element = stack.pop(); // Process the last element in the stack
-        const attrValue = element.getAttribute(attr);
-
-        if (!attrValue) {
-            continue; // Skip elements without the attribute value
-        }
-
-        const componentNames = attrValue.split(',').map(name => name.trim());
-        element.removeAttribute(attr); // Remove the attribute to prevent reprocessing
-
+        const instruction = stack.pop(); // Process the last instruction in the stack
+        const { element, componentNames } = instruction;
+        
         for (const componentName of componentNames) {
             try {
                 await processComponent(element, componentName); // Process the component
@@ -37,8 +37,13 @@ async function injectComponents() {
         }
 
         // Check for any new elements with `inject-component` added by this component
-        const newElements = Array.from(document.querySelectorAll(`[${attr}]`));
-        stack.push(...newElements); // Add them to the stack for processing
+        const newElements = Array.from(document.querySelectorAll(`[${attr}]`)).map(newElement => {
+            const newAttrValue = newElement.getAttribute(attr);
+            newElement.removeAttribute(attr); // Remove the attribute immediately
+            return { element: newElement, componentNames: newAttrValue ? newAttrValue.split(',').map(name => name.trim()) : [] };
+        });
+
+        stack.push(...newElements); // Add new instructions to the stack
     }
 }
 
@@ -82,12 +87,24 @@ async function processComponent(parentElement, componentName) {
         queue.push(() => processScript(scriptTag));
     });
 
+    var tempElements = [];
+
     // Add other content to replace or append to the parent element
     if (parentElement.hasAttribute('inject-replace')) {
+        
         var parent = parentElement.parentElement;
-        parentElement.remove(); // Remove the parent element from the DOM
+        
+        var referenceElement = document.createElement('div');
+        parent.insertBefore(referenceElement, parentElement);
+        tempElements.push(referenceElement);
+        parentElement.remove();
+
         Array.from(doc.body.childNodes).forEach(node => {
-            queue.push(() => parent.appendChild(document.importNode(node, true)));
+            queue.push(() => 
+                {
+                    parent.insertBefore(document.importNode(node, true), referenceElement);
+                }
+            );
         });
     } else {
         const wrapper = document.createElement('div');
@@ -98,8 +115,15 @@ async function processComponent(parentElement, componentName) {
     }
 
     // Process all queued tasks sequentially
-    for (const task of queue) {
+    for (const task of queue) 
+    {
         await task();
+    }
+
+    // Remove all tempElements
+    for(const tempElement of tempElements)
+    {
+        tempElement.remove();
     }
 }
 
