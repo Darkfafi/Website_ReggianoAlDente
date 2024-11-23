@@ -15,26 +15,38 @@ document.addEventListener('DOMContentLoaded', () => {
 
 async function injectComponents() {
     const attr = "inject-component";
-    const elements = Array.from(document.querySelectorAll(`[${attr}]`));
+    let stack = Array.from(document.querySelectorAll(`[${attr}]`)); // Initial stack of elements
 
-    for (const element of elements) {
-        const componentNames = element.getAttribute(attr).split(',').map(name => name.trim());
+    while (stack.length > 0) {
+        const element = stack.pop(); // Process the last element in the stack
+        const attrValue = element.getAttribute(attr);
+
+        if (!attrValue) {
+            continue; // Skip elements without the attribute value
+        }
+
+        const componentNames = attrValue.split(',').map(name => name.trim());
         element.removeAttribute(attr); // Remove the attribute to prevent reprocessing
 
         for (const componentName of componentNames) {
             try {
-                await processComponent(element, componentName);
+                await processComponent(element, componentName); // Process the component
             } catch (error) {
                 console.error(`Error processing component ${componentName}:`, error);
             }
         }
+
+        // Check for any new elements with `inject-component` added by this component
+        const newElements = Array.from(document.querySelectorAll(`[${attr}]`));
+        stack.push(...newElements); // Add them to the stack for processing
     }
 }
+
 
 async function processComponent(parentElement, componentName) {
     const response = await fetch(`components/${componentName}.html`);
     if (!response.ok) throw new Error(`Failed to load ${componentName}`);
-
+    
     let data = await response.text();
 
     // Handle key-* attribute replacements
