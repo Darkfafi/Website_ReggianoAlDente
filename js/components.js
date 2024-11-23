@@ -42,7 +42,6 @@ async function injectComponents() {
     }
 }
 
-
 async function processComponent(parentElement, componentName) {
     const response = await fetch(`components/${componentName}.html`);
     if (!response.ok) throw new Error(`Failed to load ${componentName}`);
@@ -59,7 +58,8 @@ async function processComponent(parentElement, componentName) {
 
     keys.forEach(({ key, value }) => {
         const placeholder = `[${key}]`;
-        data = data.replace(placeholder, value);
+        const regex = new RegExp(placeholder.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'); // Escape special characters in the placeholder
+        data = data.replace(regex, value);
     });
 
     const parser = new DOMParser();
@@ -82,12 +82,20 @@ async function processComponent(parentElement, componentName) {
         queue.push(() => processScript(scriptTag));
     });
 
-    // Add other content as a wrapper div to the queue
-    const wrapper = document.createElement('div');
-    Array.from(doc.body.childNodes).forEach(node => {
-        wrapper.appendChild(document.importNode(node, true));
-    });
-    queue.push(() => parentElement.appendChild(wrapper));
+    // Add other content to replace or append to the parent element
+    if (parentElement.hasAttribute('inject-replace')) {
+        var parent = parentElement.parentElement;
+        parentElement.remove(); // Remove the parent element from the DOM
+        Array.from(doc.body.childNodes).forEach(node => {
+            queue.push(() => parent.appendChild(document.importNode(node, true)));
+        });
+    } else {
+        const wrapper = document.createElement('div');
+        Array.from(doc.body.childNodes).forEach(node => {
+            wrapper.appendChild(document.importNode(node, true));
+        });
+        queue.push(() => parentElement.appendChild(wrapper));
+    }
 
     // Process all queued tasks sequentially
     for (const task of queue) {
