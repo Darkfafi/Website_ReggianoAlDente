@@ -72,6 +72,11 @@ async function processComponent(parentElement, componentName) {
 
     const queue = []; // Queue to handle all elements in order
 
+    // Add <meta> tags to the queue
+    doc.querySelectorAll('meta').forEach(metaTag => {
+        queue.push(() => processMeta(metaTag));
+    });
+
     // Add <link> tags to the queue
     doc.querySelectorAll('link').forEach(linkTag => {
         queue.push(() => processLink(linkTag));
@@ -143,6 +148,17 @@ function processStyle(styleTag) {
         const style = document.createElement('style');
         style.textContent = styleTag.textContent;
         document.head.appendChild(style);
+        resolve();
+    });
+}
+
+function processMeta(metaTag) {
+    return new Promise(resolve => {
+        const meta = document.createElement('meta');
+        Array.from(metaTag.attributes).forEach(attr => {
+            meta.setAttribute(attr.name, attr.value);
+        });
+        document.head.appendChild(meta);
         resolve();
     });
 }
