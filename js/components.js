@@ -66,6 +66,9 @@ async function processComponent(parentElement, componentName) {
         const regex = new RegExp(placeholder.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'); // Escape special characters in the placeholder
         data = data.replace(regex, value);
     });
+    
+    // Replace variables in the content
+    data = await replaceVariables(data);
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(data, 'text/html');
@@ -179,4 +182,57 @@ function processScript(scriptTag) {
             resolve(); // Inline scripts execute immediately
         }
     });
+}
+
+const configCache = {}; // Cache for loaded configuration files
+
+async function fetchConfig(configName) {
+    if (configCache[configName]) {
+        return configCache[configName];
+    }
+
+    const response = await fetch(`configs/${configName}.txt`);
+    if (!response.ok) throw new Error(`Failed to load config: ${configName}`);
+
+    const configText = await response.text();
+    const config = configText.split('\n').reduce((acc, line) => {
+        const [key, ...valueParts] = line.split(':');
+        if (key && valueParts.length > 0) {
+            acc[key.trim()] = valueParts.join(':').trim();
+        }
+        return acc;
+    }, {});
+
+    configCache[configName] = config;
+    return config;
+}
+
+async function replaceVariables(content) {
+    const variableRegex = /\[([a-zA-Z0-9_.]+)\]/g;
+    let match;
+    const replacements = {};
+
+    while ((match = variableRegex.exec(content)) !== null) {
+        const fullKey = match[1]; // e.g., main_config.name
+        const [configName, key] = fullKey.split('.');
+        if (!configName || !key) continue;
+
+        if (!replacements[fullKey]) {
+            try {
+                const config = await fetchConfig(configName);
+                replacements[fullKey] = config[key] || '';
+            } catch (error) {
+                console.error(`Error fetching variable ${fullKey}:`, error);
+                replacements[fullKey] = ''; // Default to empty string if an error occurs
+            }
+        }
+    }
+
+    // Perform replacements
+    Object.entries(replacements).forEach(([variable, value]) => {
+        const regex = new RegExp(`\\[${variable.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}\\]`, 'g');
+        content = content.replace(regex, value);
+    });
+
+    return content;
 }
