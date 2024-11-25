@@ -72,7 +72,7 @@
                 itemsArray.forEach(item => 
                 {
                     const listItem = document.createElement("li");
-                    listItem.textContent = item.trim();
+                    listItem.innerHTML = item.trim();
                     listItem.classList.add("list-item");
                     itemsList.appendChild(listItem);
                 });
