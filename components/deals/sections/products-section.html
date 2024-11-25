@@ -1,29 +1,28 @@
 <section id="section_5">
     <div>
-
         <div inject-component="deals/objects/product" 
             inject-replace key-index="1" 
-            key-title="Reggiano Essentials"
-            key-price="9,99"
-            key-description="Essentials which will make anyone happy"
-            key-items="Item 1, Item 2, Item 3">
+            key-title="[deal.1_name]"
+            key-price="[deal.1_price]"
+            key-description="[deal.1_description]"
+            key-items="[deal.1_items]">
         </div>
 
         <div inject-component="deals/objects/product" 
-            inject-replace key-index="2" 
-            key-title="Reggiano Prestige"
-            key-price="19,99"
+            inject-replace key-index="2"
             key-reverse="true" 
-            key-description="Prestige pack to spoil somebody special"
-            key-items="Item 1, Item 2, Item 3">
+            key-title="[deal.2_name]"
+            key-price="[deal.2_price]"
+            key-description="[deal.2_description]"
+            key-items="[deal.2_items]">
         </div>
         
         <div inject-component="deals/objects/product" 
             inject-replace key-index="3" 
-            key-title="Reggiano Royalty"
-            key-price="29,99"
-            key-description="Royalty pack with only the best selected items"
-            key-items="Item 1, Item 2 <b>(x3)</b>, Item 3">
+            key-title="[deal.3_name]"
+            key-price="[deal.3_price]"
+            key-description="[deal.3_description]"
+            key-items="[deal.3_items]">
         </div>
     </div>
 </section>

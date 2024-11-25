@@ -1,0 +1,14 @@
+1_name: Reggiano Essentials
+1_description: Essentials which will make anyone happy
+1_price: 9,99
+1_items: Item 1, Item 2, Item 3
+
+2_name: Reggiano Prestige
+2_description: Prestige pack to spoil somebody special
+2_price: 19,99
+2_items: Item 1, Item 2, Item 3
+
+3_name: Reggiano Royalty
+3_description: Royalty pack with only the best selected items
+3_price: 29,99
+3_items: Item 1, Item 2, Item 3
