@@ -1,18 +1,18 @@
 <div id="deal_[INDEX]" class="row align-items-center justify-content-center pb-3 pt-2">
     <div class="col-md-4 text-center fancy">
         <div>
-            <h1 class="my-1">[TITLE]</h1>
+            <h1 class="my-1">[deal.[INDEX]_name]</h1>
         </div>
         <div class="text-center">
             <img src="assets/deals/deal-[INDEX].jpg" style="height: 200px;" />
         </div>
         <div class="mt-2">
-            <h3>€[PRICE]</h3>
+            <h3>€[deal.[INDEX]_price]</h3>
         </div>
     </div>
     <div class="col-5 col-md-8">
         <div id="deal_[INDEX]_description" style="height: 160px;">
-            <h4 class="deal_description">[DESCRIPTION]</h4>
+            <h4 class="deal_description">[deal.[INDEX]_description]</h4>
             <ul id="deal_[INDEX]_items" class="list deal-list"></ul>
         </div>
         <div id="deal_[INDEX]_button" class="text-center text-md-start">
@@ -24,9 +24,9 @@
 <script>
     document.addEventListener("inject-completed", ()=>
     {
-        const reverse = "[REVERSE]" === "true";
-        const items = "[ITEMS]"; // Replace with the actual items string, e.g., "Item A,Item B,Item C"
+        const items = "[deal.[INDEX]_items]"; // Replace with the actual items string, e.g., "Item A,Item B,Item C"
         const alternate = parseInt("[INDEX]") % 2 == 0;
+        const reverse = alternate;
         
         const dealElement = document.getElementById("deal_[INDEX]");
         const descriptionElement = document.getElementById("deal_[INDEX]_description");

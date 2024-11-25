@@ -52,6 +52,9 @@ async function processComponent(parentElement, componentName) {
     if (!response.ok) throw new Error(`Failed to load ${componentName}`);
     
     let data = await response.text();
+    
+    // Replace variables in the content (KEY Specified)
+    data = await replaceVariables(data, true);
 
     // Handle key-* attribute replacements
     const keys = Array.from(parentElement.attributes)
@@ -68,7 +71,7 @@ async function processComponent(parentElement, componentName) {
     });
     
     // Replace variables in the content
-    data = await replaceVariables(data);
+    data = await replaceVariables(data, false);
 
     const parser = new DOMParser();
     const doc = parser.parseFromString(data, 'text/html');
@@ -207,8 +210,8 @@ async function fetchConfig(configName) {
     return config;
 }
 
-async function replaceVariables(content) {
-    const variableRegex = /\[([a-zA-Z0-9_.]+)\]/g;
+async function replaceVariables(content, detectKey) {
+    const variableRegex =  detectKey === true ? /\[(key:[a-zA-Z0-9_.]+)\]/g : /\[([a-zA-Z0-9_.]+)\]/g;
     let match;
     const replacements = {};
 
@@ -219,7 +222,7 @@ async function replaceVariables(content) {
 
         if (!replacements[fullKey]) {
             try {
-                const config = await fetchConfig(configName);
+                const config = await fetchConfig(configName.replace("key:", ''));
                 replacements[fullKey] = config[key] || '';
             } catch (error) {
                 console.error(`Error fetching variable ${fullKey}:`, error);
