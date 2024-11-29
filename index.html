@@ -2,19 +2,23 @@
 <html lang="en">
 <head inject-component="dependencies">
   <style>
-    body {
+    #inject_body {
         visibility: hidden; /* Hide the body immediately */
     }
   </style>
 </head>
+
 <body>
-  <div class="hero_area">
-    <div inject-component="header" key-home="active"></div>
-    <div inject-component="home/landingpage"></div>
+  <div inject-component="loader" inject-replace inject-priority=-9999></div>
+  <div id="inject_body">
+    <div class="hero_area">
+      <div inject-component="header" inject-replace key-home="active"></div>
+      <div inject-component="home/landingpage" inject-replace></div>
+    </div>
+    
+    <div inject-component="home/product" inject-replace></div>
+    <div inject-component="footer" inject-replace></div>
   </div>
-  
-  <div inject-component="home/product"></div>
-  <div inject-component="footer"></div>
 
   <!-- Components -->
   <script src="js/components.js"></script>

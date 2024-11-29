@@ -1,11 +1,18 @@
-document.body.style.visibility = 'hidden';
+const injectBodyElement = document.getElementById("inject_body")
+
+if(!injectBodyElement)
+{
+    injectBodyElement = document.body;
+}
+
+injectBodyElement.style.visibility = 'hidden';
 
 document.addEventListener('DOMContentLoaded', () => {
     injectComponents()
         .then(() => {
             // Visuals
-            document.body.style.visibility = 'visible';
             window.scrollTo(0, 0);
+            injectBodyElement.style.visibility = 'visible';
 
             // Callback
             document.dispatchEvent(new Event('inject-completed'));
@@ -14,21 +21,28 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 async function injectComponents() {
-
     const attr = "inject-component";
+
+    let currentPriority = 0;
     let stack = Array.from(document.querySelectorAll(`[${attr}]`)).map(element => {
         const attrValue = element.getAttribute(attr);
+        let prioValue = element.getAttribute("inject-priority");   
+        if(!prioValue)
+        {
+            prioValue = currentPriority++;
+        }
         element.removeAttribute(attr); // Remove the attribute immediately to prevent duplication
-        return { element, componentNames: attrValue ? attrValue.split(',').map(name => name.trim()) : [] };
+        return { element, priority: prioValue, componentNames: attrValue ? attrValue.split(',').map(name => name.trim()) : [] };
     });
 
-    stack.reverse();
+    stack.sort((a, b) => b.priority - a.priority);
 
     while (stack.length > 0) {
         const instruction = stack.pop(); // Process the last instruction in the stack
         const { element, componentNames } = instruction;
         
         for (const componentName of componentNames) {
+            console.log(componentName);
             try {
                 await processComponent(element, componentName); // Process the component
             } catch (error) {
