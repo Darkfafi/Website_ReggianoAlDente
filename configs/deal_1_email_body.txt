@@ -1,0 +1,13 @@
+Reggiano al Dente,%0D%0A
+%0D%0A
+I would like to reserve the following products:%0D%0A
+%0D%0A
+[deal.1_name]: 1x%0D%0A
+[deal.2_name]: 0x%0D%0A
+[deal.3_name]: 0x%0D%0A
+%0D%0A
+I would like to pick them up at the market on [INSERT DATE]%0D%0A
+%0D%0A
+Best Regards,%0D%0A
+%0D%0A
+[YOUR NAME]

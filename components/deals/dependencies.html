@@ -1,0 +1,98 @@
+<style>
+
+/* Deal Main */
+.deal-main {
+  position: relative;
+  overflow: hidden;
+  border-radius: 12px;
+}
+
+.deal-main .banner-content .categories {
+  font-family: 'Garamond';
+  font-size: 37px;
+  text-transform: capitalize;
+  color: var(--dark-color);
+}
+
+.deal-main .banner-content .banner-title {
+  letter-spacing: 0.02em;
+  font-size: 33px;
+}
+
+/* category carousel */
+.category-carousel .category-item {
+  background: #FFFFFF;
+  border: 1px solid #FBFBFB;
+  box-shadow: 0px 5px 22px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+  text-align: center;
+  padding: 60px 20px;
+  margin: 20px 0;
+  transition: box-shadow 0.3s ease-out, transform 0.3s ease-out;
+}
+.category-carousel .category-item:hover {
+  transform: translate3d(0,-10px,0);
+  box-shadow: 0px 21px 44px rgba(0, 0, 0, 0.08);
+}
+.category-carousel .category-item .category-title {
+  font-weight: bold;
+  font-size: 30px;
+  line-height: 27px;
+  letter-spacing: 0.02em;
+  text-transform: capitalize;
+  color: #222222;
+  margin-top: 20px;
+}
+.category-carousel img {
+  box-shadow: 0px 5px 22px rgba(0, 0, 0, 0.04);
+  border-radius: 16px;
+}
+
+</style>
+
+<!--SWIPER INITIALIZATION-->
+<script>
+  (function($) {
+  "use strict";
+  var initSwiper = function() {
+  var swiper = new Swiper(".main-swiper", {
+    speed: 500,
+    pagination: {
+      el: ".swiper-pagination",
+      clickable: true,
+    },
+  });
+
+  var category_swiper = new Swiper(".category-carousel", {
+    slidesPerView: 6,
+    spaceBetween: 30,
+    speed: 500,
+    centerInsufficientSlides: true,
+    navigation: {
+      nextEl: ".category-carousel-next",
+      prevEl: ".category-carousel-prev",
+    },
+    breakpoints: {
+      0: {
+        slidesPerView: 2,
+      },
+      768: {
+        slidesPerView: 3,
+      },
+      991: {
+        slidesPerView: 4,
+      },
+      1500: {
+        slidesPerView: 6,
+      },
+    }
+  });
+}
+
+// document ready
+document.addEventListener("inject-completed", ()=>{
+    initSwiper();
+});
+
+})(jQuery);
+</script>
