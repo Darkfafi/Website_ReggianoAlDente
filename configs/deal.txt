@@ -12,3 +12,5 @@
 3_description: Royalty pack with only the best selected items
 3_price: 29,99
 3_items: Item 1, Item 2, Item 3
+
+email_subject: Reservation - Christmas Deal

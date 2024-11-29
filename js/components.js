@@ -52,23 +52,13 @@ async function processComponent(parentElement, componentName) {
     if (!response.ok) throw new Error(`Failed to load ${componentName}`);
     
     let data = await response.text();
+
+    data = replaceKeys(data, parentElement);
     
     // Replace variables in the content (KEY Specified)
     data = await replaceVariables(data, true);
 
-    // Handle key-* attribute replacements
-    const keys = Array.from(parentElement.attributes)
-        .filter(attr => attr.name.startsWith('key-'))
-        .map(attr => ({
-            key: attr.name.replace('key-', '').toUpperCase(),
-            value: attr.value
-        }));
-
-    keys.forEach(({ key, value }) => {
-        const placeholder = `[${key}]`;
-        const regex = new RegExp(placeholder.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'); // Escape special characters in the placeholder
-        data = data.replace(regex, value);
-    });
+    data = replaceKeys(data, parentElement);
     
     // Replace variables in the content
     data = await replaceVariables(data, false);
@@ -188,16 +178,30 @@ function processScript(scriptTag) {
 }
 
 const configCache = {}; // Cache for loaded configuration files
+const configDataCache = {} // Cahce for loaded configuration data
 
-async function fetchConfig(configName) {
-    if (configCache[configName]) {
-        return configCache[configName];
+async function fetchConfigData(configName)
+{
+    if(configDataCache[configName])
+    {
+        return configDataCache[configName];
     }
 
     const response = await fetch(`configs/${configName}.txt`);
-    if (!response.ok) throw new Error(`Failed to load config: ${configName}`);
+    if(!response.ok) throw new Error(`Failed to load config: ${configName}`);
+    const configData = await response.text();
+    configDataCache[configName] = configData;
+    return configData;
+}
 
-    const configText = await response.text();
+async function fetchConfig(configName) 
+{    
+    if (configCache[configName]) 
+    {
+        return configCache[configName];
+    }
+
+    const configText = await fetchConfigData(configName)
     const config = configText.split('\n').reduce((acc, line) => {
         const [key, ...valueParts] = line.split(':');
         if (key && valueParts.length > 0) {
@@ -220,10 +224,24 @@ async function replaceVariables(content, detectKey) {
         const [configName, key] = fullKey.split('.');
         if (!configName || !key) continue;
 
+        const castedConfigName = configName.replace("key:", '');
+
         if (!replacements[fullKey]) {
-            try {
-                const config = await fetchConfig(configName.replace("key:", ''));
-                replacements[fullKey] = config[key] || '';
+            try 
+            {
+                var data = "";
+                
+                if(key == "FILE")
+                {  
+                    data = await fetchConfigData(castedConfigName);
+                }
+                else
+                {
+                    const config = await fetchConfig(castedConfigName);
+                    data = config[key] || '';
+                }
+
+                replacements[fullKey] = data;
             } catch (error) {
                 console.error(`Error fetching variable ${fullKey}:`, error);
                 replacements[fullKey] = ''; // Default to empty string if an error occurs
@@ -238,4 +256,22 @@ async function replaceVariables(content, detectKey) {
     });
 
     return content;
+}
+
+function replaceKeys(data, parentElement) {
+    // Handle key-* attribute replacements
+    const keys = Array.from(parentElement.attributes)
+        .filter(attr => attr.name.startsWith('key-'))
+        .map(attr => ({
+            key: attr.name.replace('key-', '').toUpperCase(),
+            value: attr.value
+        }));
+
+    keys.forEach(({ key, value }) => {
+        const placeholder = `[${key}]`;
+        const regex = new RegExp(placeholder.replace(/[-\/\\^$*+?.()|[\]{}]/g, '\\$&'), 'g'); // Escape special characters in the placeholder
+        data = data.replace(regex, value);
+    });
+
+    return data;
 }
